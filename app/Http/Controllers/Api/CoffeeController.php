@@ -15,8 +15,10 @@ class CoffeeController extends Controller
      */
     public function index()
     {
-       $data = CoffeeMenu::all();
-    return CoffeeResource::collection($data);
+        $data = CoffeeMenu::all();
+    // return CoffeeResource::collection($data);
+
+        return new CoffeeResource(true, 'Menampilkan semua data', $data);
     }
 
     /**
@@ -24,7 +26,7 @@ class CoffeeController extends Controller
      */
     public function store(Request $request)
     {
-        $Validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'item_id' => 'required|numeric',
             'item_name' => 'required|string',
             'category' => 'required|string',
@@ -36,8 +38,11 @@ class CoffeeController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        // $data = CoffeeMenu::create($request->all());
+        // return new CoffeeResource($data);
+
         $data = CoffeeMenu::create($request->all());
-        return new CoffeeResource($data);
+        return new CoffeeResource(true, 'Data berhasil diupdate', $data);
     }
 
     /**
@@ -51,6 +56,13 @@ class CoffeeController extends Controller
             $coffee = CoffeeMenu::where('_id', $id)->firstOrFail();
         }
         return new CoffeeResource($coffee);
+
+        // $coffe = CoffeeMenu::find($id);
+
+        // if (!$coffe) {
+        //     return response()->json(['message' => 'Coffee item not found.'], 404);
+        // }
+        // return $coffee->toResource(MovieResource::class);
     }
 
     /**
@@ -72,23 +84,37 @@ class CoffeeController extends Controller
         'is_seasonal' => 'string',
     ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'status'  => 'error',
-            'message' => $validator->errors()
-        ], 422);
-    }
+    // if ($validator->fails()) {
+    //     return response()->json([
+    //         'status'  => 'error',
+    //         'message' => $validator->errors()
+    //     ], 422);
+    // }
+
+    // $coffee->update($request->all());
+
+    
 
     $coffee->update($request->all());
-
-    return new CoffeeResource($coffee);
+    return new CoffeeResource(true, 'Data berhasil diupdate', $coffee);
 }
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
-    {
-        //
-    }
+{
+    if (is_numeric($id)) {
+            $coffee = CoffeeMenu::where('item_id', (int)$id)->firstOrFail();
+        } else {
+            $coffee = CoffeeMenu::where('_id', $id)->firstOrFail();
+        }
+        
+
+        $coffee->delete();
+        return response()->json(['message' => 'Coffee item deleted successfully.'], 200);
+
+        $coffee->delete();
+        return new CoffeeResource(true, 'Data berhasil dihapus', 200);
+}
 }
