@@ -20,3 +20,4 @@ use App\Http\Controllers\Api\RegisterController;
 Route::apiResource('/coffee', CoffeeController::class);
 Route::get('/register', [RegisterController::class, 'index']);
 Route::post('/register', [RegisterController::class, 'store']);
+Route::post('/login', App\Http\Controllers\Api\LoginController::class);
