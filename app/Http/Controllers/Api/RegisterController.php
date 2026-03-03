@@ -7,11 +7,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash; 
 use Illuminate\Support\Facades\Validator; 
+use Illuminate\Http\JsonResponse; 
 
 class RegisterController extends Controller
 {
-    
-    public function index()
+    public function index(): JsonResponse
     {
         $users = User::all();
         return response()->json([
@@ -21,7 +21,7 @@ class RegisterController extends Controller
         ], 200);
     }
 
-    public function store(Request $request) 
+    public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name'      => 'required|string|max:255',
@@ -51,9 +51,11 @@ class RegisterController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+    
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan pada server',
+                'message' => 'Terjadi kesalahan pada server saat mendaftar',
+                'error'   => $e->getMessage() 
             ], 500);
         }
     }

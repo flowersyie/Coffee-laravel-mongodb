@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator; 
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse; 
 
 class LoginController extends Controller
 {
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request) 
+    public function __invoke(Request $request): JsonResponse
     {
-        
         $validator = Validator::make($request->all(), [
             'email'    => 'required|email',
             'password' => 'required|string|min:8',
@@ -29,9 +29,7 @@ class LoginController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        $token = auth()->guard('api')->attempt($credentials);
-
-        if (!$token) {
+        if (!$token = auth()->guard('api')->attempt($credentials)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Email atau password salah',
